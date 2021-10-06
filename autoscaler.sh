@@ -7,7 +7,7 @@ export IMAGE_ID=""
 export SUBNET_ID=""
 export AD=""
 export SHAPE="VM.Standard.E3.Flex"
-export CLOUD_INIT_FILE_LOCATION="./runner.sh"
+export CLOUD_INIT_FILE_LOCATION="./runner_installer.sh"
 
 export RUNNER_IDLE_TIME_THRESHOLD=300
 export GITLAB_PERSONAL_TOKEN=""
