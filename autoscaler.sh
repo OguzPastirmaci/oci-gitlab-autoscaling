@@ -41,18 +41,18 @@ for id in $RUNNER_IDS
 do
     NUMBER_OF_RUNNING_JOBS=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_PERSONAL_TOKEN" "$GITLAB_URL/api/v4/runners/$id/jobs?status=running" | jq '. | length')
     CURRENT_NUMBER_OF_RUNNERS=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_PERSONAL_TOKEN" "$GITLAB_URL/api/v4/projects/$GITLAB_PROJECT_ID/runners?type=project_type" | jq '.[].id' | wc -l)
-    RUNNER_CONTACTED_AT=$(date -d "$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_PERSONAL_TOKEN" "$GITLAB_URL/api/v4/runners/$RUNNER_ID" | jq -r '."contacted_at"')" +%s)
+    RUNNER_CONTACTED_AT=$(date -d "$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_PERSONAL_TOKEN" "$GITLAB_URL/api/v4/runners/$id" | jq -r '."contacted_at"')" +%s)
     CURRENT_TIME=$(date +%s)
     RUNNER_IDLE_TIME=$((CURRENT_TIME - RUNNER_CONTACTED_AT))
     
     if [ $NUMBER_OF_RUNNING_JOBS -eq 0 ] && [ $RUNNER_IDLE_TIME -gt $RUNNER_IDLE_TIME_THRESHOLD ] && [ $CURRENT_NUMBER_OF_RUNNERS -gt $MINIMUM_NUMBER_OF_RUNNERS ]
     then
-        echo "Runner $id is not currently running any jobs, deleting THE instance"
+        echo "Scaling: Runner $id is not currently running any jobs, deleting the instance"
         RUNNER_NAME=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_PERSONAL_TOKEN" "$GITLAB_URL/api/v4/runners/$id" | jq -r '.description')
         INSTANCE_TO_DELETE=$(oci compute instance list --compartment-id $COMPARTMENT_ID | jq -r --arg RUNNER_NAME "$RUNNER_NAME" '.data[] | select(."display-name"==$RUNNER_NAME) | .id')
         curl --request DELETE --header "PRIVATE-TOKEN: $GITLAB_PERSONAL_TOKEN" "$GITLAB_URL/api/v4/runners/$id"
         oci compute instance terminate --instance-id $INSTANCE_TO_DELETE --force
     else
-        echo "Runner $id is either currently running jobs or haven't been idle long enough, skipping"
+        echo "Skipping: Runner $id is either currently running jobs or haven't been idle long enough"
     fi
 done
