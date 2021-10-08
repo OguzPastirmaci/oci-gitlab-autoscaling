@@ -47,7 +47,7 @@ do
     
     if [ $NUMBER_OF_RUNNING_JOBS -eq 0 ] && [ $RUNNER_IDLE_TIME -gt $RUNNER_IDLE_TIME_THRESHOLD ] && [ $CURRENT_NUMBER_OF_RUNNERS -gt $MINIMUM_NUMBER_OF_RUNNERS ]
     then
-        echo "Scaling: Runner $id is not currently running any jobs, deleting the instance"
+        echo "Scaling: Runner $id is not currently running any jobs, have been idle more than the threshold, deleting the instance"
         RUNNER_NAME=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_PERSONAL_TOKEN" "$GITLAB_URL/api/v4/runners/$id" | jq -r '.description')
         INSTANCE_TO_DELETE=$(oci compute instance list --compartment-id $COMPARTMENT_ID | jq -r --arg RUNNER_NAME "$RUNNER_NAME" '.data[] | select(."display-name"==$RUNNER_NAME) | .id')
         curl --request DELETE --header "PRIVATE-TOKEN: $GITLAB_PERSONAL_TOKEN" "$GITLAB_URL/api/v4/runners/$id"
