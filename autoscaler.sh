@@ -13,10 +13,10 @@ export GITLAB_PERSONAL_TOKEN=""
 export GITLAB_URL="https://gitlab.com"
 export GITLAB_PROJECT_ID=""
 
-export RUNNER_IDLE_TIME_THRESHOLD=120
 export MAXIMUM_NUMBER_OF_PENDING_JOBS_THRESHOLD=3
 export MAXIMUM_NUMBER_OF_RUNNERS=20
 export MINIMUM_NUMBER_OF_RUNNERS=1
+export RUNNER_IDLE_TIME_THRESHOLD=120
 
 # ADDING NEW INSTANCES
 # Create new instances if the number of pending jobs is higher than threshold
